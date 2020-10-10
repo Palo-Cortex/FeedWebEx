@@ -3,26 +3,26 @@ commonfields:
   id: fcbc6aaf-0ddd-4d95-bc87-85637b8082a3
   version: -1
 configuration:
-- defaultvalue: 'true'
-  display: Fetch indicators
+- display: Fetch indicators
+  defaultvalue: 'true'
   name: feed
   required: false
   type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+- display: Indicator Reputation
   defaultvalue: Good
-  display: Indicator Reputation
   name: feedReputation
   options:
   - None
   - Good
   - Suspicious
   - Bad
+  additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
   required: false
   type: 18
-- additionalinfo: Reliability of the source providing the intelligence data
+- display: Source Reliability
+  additionalinfo: Reliability of the source providing the intelligence data
   defaultvalue: A - Completely reliable
-  display: Source Reliability
   name: feedReliability
   options:
   - A - Completely reliable
@@ -33,9 +33,9 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+- display: Traffic Light Protocol Color
+  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
     fetched from the feed
-  display: Traffic Light Protocol Color
   name: tlp_color
   options:
   - RED
@@ -44,8 +44,9 @@ configuration:
   - WHITE
   required: false
   type: 15
-- defaultvalue: suddenDeath
+- display: ""
   name: feedExpirationPolicy
+  defaultvalue: indicatorType
   options:
   - never
   - interval
@@ -57,21 +58,22 @@ configuration:
   name: feedExpirationInterval
   required: false
   type: 1
-- defaultvalue: '30'
-  display: Feed Fetch Interval
+- display: Feed Fetch Interval
+  defaultvalue: '30'
   name: feedFetchInterval
   required: false
   type: 19
-- additionalinfo: Supports CSV values.
-  display: Tags
+- display: Tags
+  additionalinfo: Supports CSV values.
+  defaultvalue: WebEx
   name: feedTags
   required: false
   type: 0
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
+- display: Bypass exclusion list
+  additionalinfo: When selected, the exclusion list is ignored for indicators from
     this feed. This means that if an indicator from this feed is on the exclusion
     list, the indicator might still be added to the system.
   defaultvalue: 'true'
-  display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
   type: 8
@@ -93,7 +95,7 @@ script:
   commands:
   - arguments:
     - default: false
-      defaultValue: '10'
+      defaultValue: '100'
       description: The maximum number of results to return. The default value is 10.
       isArray: false
       name: limit
@@ -102,13 +104,13 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Both
-      description: The indicator type. Can be "IPs", "Domains", or "Both". The default
+      description: The indicator type. Can be "IPs", "URLs", or "Both". The default
         value is "Both".
       isArray: false
       name: indicator_type
       predefined:
       - IPs
-      - Domains
+      - URLs
       - Both
       required: false
       secret: false

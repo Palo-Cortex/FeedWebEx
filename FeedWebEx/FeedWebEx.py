@@ -120,8 +120,9 @@ class Client:
             ipTable = grab_ip_table(ipsSection)
             retIPs = grab_ips(ipTable)
 
-            data = json.dumps({'domains': json.dumps(retDomains), 'ips': json.dumps(retIPs)})
-            indicators = [i for i in data if 'ips' in i or 'domains' in i]  # filter empty entries and add metadata]
+            data = json.dumps({'urls': json.dumps(retDomains), 'ips': json.dumps(retIPs)})
+            return_results(data)
+            indicators = [i for i in data if 'ips' in i or 'urls' in i]  # filter empty entries and add metadata]
             result.extend(indicators)
         except requests.exceptions.SSLError as err:
             demisto.debug(str(err))
@@ -193,7 +194,7 @@ def fetch_indicators(client: Client, indicator_type_lower: str, limit: int = -1)
 
     for item in iterator:
         if indicator_type_lower == 'both':
-            values = item.get('ips', []) + item.get('domains', [])
+            values = item.get('ips', []) + item.get('urls', [])
         else:
             values = item.get(indicator_type_lower)
         if values:
@@ -204,9 +205,13 @@ def fetch_indicators(client: Client, indicator_type_lower: str, limit: int = -1)
                     'type': type_,
                 }
                 for key, val in item.items():
-                    if key not in ['ips', 'domains']:
+                    if key not in ['ips', 'urls']:
                         raw_data.update({key: val})
 
+                return_results(raw_data)
+                indicator_mapping_fields = {}
+
+                """
                 indicator_mapping_fields = {
                     "port": argToList(item.get('tcpPorts', '')),
                     "service": item.get('serviceArea', '')
@@ -220,6 +225,8 @@ def fetch_indicators(client: Client, indicator_type_lower: str, limit: int = -1)
                     indicator_mapping_fields["office365required"] = item.get('required')
                 if item.get('notes'):
                     indicator_mapping_fields["description"] = item.get('notes')
+                """
+
                 indicator_mapping_fields['tags'] = client.tags
                 if client.tlp_color:
                     indicator_mapping_fields['trafficlightprotocol'] = client.tlp_color
@@ -244,7 +251,6 @@ def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[str, D
     Returns:
         Outputs.
     """
-    return_results("Calling Get Indicators")
     indicator_type = str(args.get('indicator_type'))
     indicator_type_lower = indicator_type.lower()
     limit = int(demisto.args().get('limit')) if 'limit' in demisto.args() else 10
