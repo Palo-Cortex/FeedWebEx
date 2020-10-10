@@ -3,102 +3,86 @@ commonfields:
   id: fcbc6aaf-0ddd-4d95-bc87-85637b8082a3
   version: -1
 configuration:
-  - display: Regions
-    hidden: false
-    name: regions
-    options:
-      - Worldwide
-    required: true
-    type: 16
-  - display: Services
-    hidden: false
-    name: services
-    options:
-      - All
-    required: true
-    type: 16
-  - additionalinfo: Indicators from this integration instance will be marked with this
-      reputation
-    display: Indicator Reputation
-    hidden: false
-    name: feedReputation
-    options:
-      - None
-      - Good
-      - Suspicous
-      - Bad
-    required: false
-    type: 16
-  - additionalinfo: Reliability of the source providing the intelligence data
-    display: Source Reliability
-    hidden: false
-    name: feedReliability
-    options:
-      - A - Completely reliable
-      - B - Usually reliable
-      - C - Fairly reliable
-      - D - Not usually reliable
-      - E - Unreliable
-      - F - Reliability cannot be judged
-    required: true
-    type: 16
-  - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-      fetched from the feed
-    display: Traffic Light Protocol Color
-    hidden: false
-    name: tlp_color
-    options:
-      - Red
-      - Amber
-      - Green
-      - White
-    required: false
-    type: 16
-  - hidden: false
-    name: feedExpirationPolicy
-    options:
-      - never
-      - interval
-      - indicatorType
-      - suddenDeath
-    required: false
-    type: 16
-  - defaultvalue: '20160'
-    hidden: false
-    name: feedExpirationInterval
-    required: false
-    type: 0
-  - defaultvalue: '30'
-    display: Feed Fetch Interval
-    hidden: false
-    name: feedFetchInterval
-    required: false
-    type: 0
-  - additionalinfo: Supports CSV values.
-    defaultvalue: WebEx
-    display: Tags
-    hidden: false
-    name: feedTags
-    required: false
-    type: 0
-  - additionalinfo: When selected, the exclusion list is ignored for indicators from
-      this feed. This means that if an indicator from this feed is on the exclusion
-      list, the indicator might still be added to the system.
-    display: Bypass exclusion list
-    hidden: false
-    name: feedBypassExclusionList
-    required: false
-    type: 8
-  - display: Trust any certificate (not secure)
-    hidden: false
-    name: insecure
-    required: false
-    type: 8
-  - display: Use system proxy settings
-    hidden: false
-    name: proxy
-    required: false
-    type: 8
+- defaultvalue: 'true'
+  display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+- additionalinfo: Indicators from this integration instance will be marked with this
+    reputation
+  defaultvalue: Good
+  display: Indicator Reputation
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 18
+- additionalinfo: Reliability of the source providing the intelligence data
+  defaultvalue: A - Completely reliable
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
+    fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
+- defaultvalue: suddenDeath
+  name: feedExpirationPolicy
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  type: 17
+- defaultvalue: '20160'
+  name: feedExpirationInterval
+  required: false
+  type: 1
+- defaultvalue: '30'
+  display: Feed Fetch Interval
+  name: feedFetchInterval
+  required: false
+  type: 19
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  required: false
+  type: 0
+- additionalinfo: When selected, the exclusion list is ignored for indicators from
+    this feed. This means that if an indicator from this feed is on the exclusion
+    list, the indicator might still be added to the system.
+  defaultvalue: 'true'
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: The WebEx IP Address and Domain web site provided by Cisco to document
   IPs and Domains used by WebEx. The WebEx Feed integration fetches indicators from
   the web page, with which you can create a list (whitelist, blacklist, EDL, etc.)
@@ -107,24 +91,34 @@ display: WebEx Feed
 name: fcbc6aaf-0ddd-4d95-bc87-85637b8082a3
 script:
   commands:
-    - name: webex-get-indicators
-      arguments:
-      - name: limit
-        description: The maximum number of results to return. The default value is 10.
-        defaultValue: "10"
-      - name: indicator_type
-        auto: PREDEFINED
-        predefined:
-        - IPs
-        - URLs
-        - Both
-        description: The indicator type. Can be "IPs", "URLs", or "Both". The default
-          value is "IPs".
-        defaultValue: IPs
-      description: Gets indicators from the feed.
-  dockerimage: demisto/python3:3.7.4.2245
-  feed: false
-  isfetch: true
+  - arguments:
+    - default: false
+      defaultValue: '10'
+      description: The maximum number of results to return. The default value is 10.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Both
+      description: The indicator type. Can be "IPs", "Domains", or "Both". The default
+        value is "Both".
+      isArray: false
+      name: indicator_type
+      predefined:
+      - IPs
+      - Domains
+      - Both
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets indicators from the feed.
+    execution: false
+    name: webex-get-indicators
+  dockerimage: demisto/btfl-soup:1.0.1.12087
+  feed: true
+  isfetch: false
   longRunning: false
   longRunningPort: false
   runonce: false
