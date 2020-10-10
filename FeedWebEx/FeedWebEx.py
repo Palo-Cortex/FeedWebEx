@@ -120,8 +120,7 @@ class Client:
             ipTable = grab_ip_table(ipsSection)
             retIPs = grab_ips(ipTable)
 
-            data = json.dumps({'urls': json.dumps(retDomains), 'ips': json.dumps(retIPs)})
-            return_results(data)
+            data = {"urls": str(retDomains), "ips": str(retIPs)}
             indicators = [i for i in data if 'ips' in i or 'urls' in i]  # filter empty entries and add metadata]
             result.extend(indicators)
         except requests.exceptions.SSLError as err:
@@ -186,6 +185,9 @@ def fetch_indicators(client: Client, indicator_type_lower: str, limit: int = -1)
     """
     iterator = client.build_iterator()
     # filter indicator_type specific entries
+
+    return_results("Returned Indicators: " + str(iterator))
+
     if not indicator_type_lower == 'both':
         iterator = [i for i in iterator if indicator_type_lower in i]
     indicators = []
@@ -208,7 +210,6 @@ def fetch_indicators(client: Client, indicator_type_lower: str, limit: int = -1)
                     if key not in ['ips', 'urls']:
                         raw_data.update({key: val})
 
-                return_results(raw_data)
                 indicator_mapping_fields = {}
 
                 """
@@ -230,6 +231,7 @@ def fetch_indicators(client: Client, indicator_type_lower: str, limit: int = -1)
                 indicator_mapping_fields['tags'] = client.tags
                 if client.tlp_color:
                     indicator_mapping_fields['trafficlightprotocol'] = client.tlp_color
+
 
                 indicators.append({
                     'value': value,
@@ -254,6 +256,7 @@ def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[str, D
     indicator_type = str(args.get('indicator_type'))
     indicator_type_lower = indicator_type.lower()
     limit = int(demisto.args().get('limit')) if 'limit' in demisto.args() else 10
+    return_results("Get Indicators Running")
     indicators = fetch_indicators(client, indicator_type_lower, limit)
     human_readable = tableToMarkdown('Indicators from WebEx Feed:', indicators,
                                      headers=['value', 'type'], removeNull=True)
@@ -270,7 +273,6 @@ def fetch_indicators_command(client: Client) -> List[Dict]:
     Returns:
         Indicators.
     """
-    return_results("Fetch Indicators")
     indicators = fetch_indicators(client, 'both')
     return indicators
 
