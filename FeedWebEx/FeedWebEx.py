@@ -187,8 +187,6 @@ def fetch_indicators(client: Client, indicator_type_lower: str, limit: int = -1)
     iterator = client.build_iterator()
     # filter indicator_type specific entries
 
-    return_results("Returned Indicators: " + str(iterator))
-
     if not indicator_type_lower == 'both':
         iterator = [i for i in iterator if indicator_type_lower in i]
     indicators = []
@@ -257,7 +255,6 @@ def get_indicators_command(client: Client, args: Dict[str, str]) -> Tuple[str, D
     indicator_type = str(args.get('indicator_type'))
     indicator_type_lower = indicator_type.lower()
     limit = int(demisto.args().get('limit')) if 'limit' in demisto.args() else 10
-    return_results("Get Indicators Running")
     indicators = fetch_indicators(client, indicator_type_lower, limit)
     human_readable = tableToMarkdown('Indicators from WebEx Feed:', indicators,
                                      headers=['value', 'type'], removeNull=True)
