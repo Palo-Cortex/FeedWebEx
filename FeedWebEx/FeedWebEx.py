@@ -120,7 +120,8 @@ class Client:
             ipTable = grab_ip_table(ipsSection)
             retIPs = grab_ips(ipTable)
 
-            data = {"urls": str(retDomains), "ips": str(retIPs)}
+            jsonStr = '[{"urls": ' + json.dumps(retDomains) + ',' + '"ips": ' + json.dumps(retIPs) + '}]'
+            data = json.loads(jsonStr)
             indicators = [i for i in data if 'ips' in i or 'urls' in i]  # filter empty entries and add metadata]
             result.extend(indicators)
         except requests.exceptions.SSLError as err:
